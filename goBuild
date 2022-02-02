@@ -51,17 +51,65 @@ sendInfo "<b>Toolchain Compilation Started</b>" \
 # Start Count
 BUILD_START="$(date +"%s")"
 
-# Build LLVM
-msg "$LLVM_NAME: Building LLVM..."
-sendInfo "<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>"
-./build-llvm.py \
-	--clang-vendor "$LLVM_NAME" \
-	--projects "clang;lld;polly" \
-	--targets "ARM;AArch64" \
-	--shallow-clone \
-	--incremental \
-	--no-ccache \
-	--build-type "Release" 2>&1 | tee build.log
+if [[ "${TYPE}" == "default" ]]; then
+	# Build LLVM
+	msg "$LLVM_NAME: Building LLVM..."
+	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
+				"<b>Build Type: </b><code>$TYPE</code>"
+
+	./build-llvm.py \
+		--clang-vendor "$LLVM_NAME" \
+		--projects "clang;lld;polly" \
+		--targets "ARM;AArch64;X86" \
+		--shallow-clone \
+		--incremental \
+		--no-ccache \
+		--build-type "Release" 2>&1 | tee build.log
+elif [[ "${TYPE}" == "default-lto" ]]; then
+	# Build LLVM
+	msg "$LLVM_NAME: Building LLVM..."
+	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
+				"<b>Build Type: </b><code>$TYPE</code>"
+
+	./build-llvm.py \
+		--clang-vendor "$LLVM_NAME" \
+		--projects "clang;lld;polly" \
+		--targets "ARM;AArch64;X86" \
+		--shallow-clone \
+		--incremental \
+		--no-ccache \
+		--lto "thin" \
+		--build-type "Release" 2>&1 | tee build.log
+elif [[ "${TYPE}" == "gr" ]]; then
+	# Build LLVM
+	msg "$LLVM_NAME: Building LLVM..."
+	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
+				"<b>Build Type: </b><code>$TYPE</code>"
+
+	./build-llvm.py \
+		--clang-vendor "$LLVM_NAME" \
+		--projects "clang;lld;polly" \
+		--targets "ARM;AArch64;X86" \
+		--use-good-revision \
+		--incremental \
+		--no-ccache \
+		--build-type "Release" 2>&1 | tee build.log
+elif [[ "${TYPE}" == "gr-lto" ]]; then
+	# Build LLVM
+	msg "$LLVM_NAME: Building LLVM..."
+	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
+				"<b>Build Type: </b><code>$TYPE</code>"
+
+	./build-llvm.py \
+		--clang-vendor "$LLVM_NAME" \
+		--projects "clang;lld;polly" \
+		--targets "ARM;AArch64;X86" \
+		--use-good-revision \
+		--incremental \
+		--no-ccache \
+		--lto "thin" \
+		--build-type "Release" 2>&1 | tee build.log
+fi
 
 # Check if the final clang binary exists or not.
 [ ! -f install/bin/clang-1* ] && {

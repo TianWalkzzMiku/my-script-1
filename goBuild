@@ -61,7 +61,7 @@ if [[ "${TYPE}" == "default" ]]; then
 	./build-llvm.py \
 		--clang-vendor "$LLVM_NAME" \
 		--projects "clang;lld;polly" \
-		--targets "ARM;AArch64;X86" \
+		--targets "ARM;AArch64" \
 		--shallow-clone \
 		--incremental \
 		--no-ccache \
@@ -75,7 +75,7 @@ elif [[ "${TYPE}" == "default-lto" ]]; then
 	./build-llvm.py \
 		--clang-vendor "$LLVM_NAME" \
 		--projects "clang;lld;polly" \
-		--targets "ARM;AArch64;X86" \
+		--targets "ARM;AArch64" \
 		--shallow-clone \
 		--incremental \
 		--no-ccache \
@@ -90,7 +90,7 @@ elif [[ "${TYPE}" == "gr" ]]; then
 	./build-llvm.py \
 		--clang-vendor "$LLVM_NAME" \
 		--projects "clang;lld;polly" \
-		--targets "ARM;AArch64;X86" \
+		--targets "ARM;AArch64" \
 		--use-good-revision \
 		--incremental \
 		--no-ccache \
@@ -104,7 +104,7 @@ elif [[ "${TYPE}" == "gr-lto" ]]; then
 	./build-llvm.py \
 		--clang-vendor "$LLVM_NAME" \
 		--projects "clang;lld;polly" \
-		--targets "ARM;AArch64;X86" \
+		--targets "ARM;AArch64" \
 		--use-good-revision \
 		--incremental \
 		--no-ccache \

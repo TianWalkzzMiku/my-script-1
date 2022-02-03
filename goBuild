@@ -9,6 +9,7 @@
 # > GH_EMAIL
 # > GH_TOKEN
 # > GH_PUSH_REPO_URL
+# > TYPE
 
 # Function to show an informational message
 msg() {
@@ -114,7 +115,7 @@ fi
 # Check if the final clang binary exists or not.
 [ ! -f install/bin/clang-1* ] && {
 	err "Building LLVM failed ! Kindly check errors !!"
-    sendInfo "<b>$LLVM_NAME: Building failed, please fix it!"
+    sendInfo "<b>$LLVM_NAME: <\b><code>Building failed, please fix it!</code>"
 	exit 1
 }
 

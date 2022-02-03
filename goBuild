@@ -158,6 +158,7 @@ clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
 git config --global user.name $GH_USERNAME
 git config --global user.email $GH_EMAIL
 git clone "https://$GH_USERNAME:$GH_TOKEN@$GH_PUSH_REPO_URL" rel_repo
+rm -rf "$DIR"/rel_repo/*
 pushd rel_repo || exit
 rm -fr ./*
 cp -r ../install/* .

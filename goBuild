@@ -52,7 +52,7 @@ sendInfo "<b>Toolchain Compilation Started</b>" \
 # Start Count
 BUILD_START="$(date +"%s")"
 
-if [[ "${TYPE}" == "default" ]]; then
+if [[ "${TYPE}" == "latest" ]]; then
 	# Build LLVM
 	msg "$LLVM_NAME: Building LLVM..."
 	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
@@ -66,7 +66,7 @@ if [[ "${TYPE}" == "default" ]]; then
 		--incremental \
 		--no-ccache \
 		--build-type "Release" 2>&1 | tee build.log
-elif [[ "${TYPE}" == "default-lto" ]]; then
+elif [[ "${TYPE}" == "latest-lto" ]]; then
 	# Build LLVM
 	msg "$LLVM_NAME: Building LLVM..."
 	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
@@ -106,6 +106,35 @@ elif [[ "${TYPE}" == "gr-lto" ]]; then
 		--projects "clang;lld;polly" \
 		--targets "ARM;AArch64" \
 		--use-good-revision \
+		--incremental \
+		--no-ccache \
+		--lto "thin" \
+		--build-type "Release" 2>&1 | tee build.log
+elif [[ "${TYPE}" == "release-14" ]]; then
+	# Build LLVM
+	msg "$LLVM_NAME: Building LLVM..."
+	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
+				"<b>Build Type: </b><code>$TYPE</code>"
+
+	./build-llvm.py \
+		--clang-vendor "$LLVM_NAME" \
+		--projects "clang;lld;polly" \
+		--targets "ARM;AArch64" \
+		--branch "release/14.x" \
+		--incremental \
+		--no-ccache \
+		--build-type "Release" 2>&1 | tee build.log
+elif [[ "${TYPE}" == "release-14-lto" ]]; then
+	# Build LLVM
+	msg "$LLVM_NAME: Building LLVM..."
+	sendInfo 	"<b>$LLVM_NAME: </b><code>Building LLVM. . .</code>" \
+				"<b>Build Type: </b><code>$TYPE</code>"
+
+	./build-llvm.py \
+		--clang-vendor "$LLVM_NAME" \
+		--projects "clang;lld;polly" \
+		--targets "ARM;AArch64" \
+		--branch "release/14.x" \
 		--incremental \
 		--no-ccache \
 		--lto "thin" \
@@ -157,8 +186,13 @@ clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
 # Update Git repository
 git config --global user.name $GH_USERNAME
 git config --global user.email $GH_EMAIL
-git clone "https://$GH_USERNAME:$GH_TOKEN@$GH_PUSH_REPO_URL" rel_repo
-rm -rf "$DIR"/rel_repo/*
+
+if [[ "${TYPE}" == "release-14" ]]; then
+	git clone -b "${TYPE}" "https://$GH_USERNAME:$GH_TOKEN@$GH_PUSH_REPO_URL" rel_repo
+else
+	git clone "https://$GH_USERNAME:$GH_TOKEN@$GH_PUSH_REPO_URL" rel_repo
+fi
+
 pushd rel_repo || exit
 rm -fr ./*
 cp -r ../install/* .

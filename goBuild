@@ -4,6 +4,7 @@
 # Setup ENV Variable for CI ( You need all ENV for starting )
 # > TELEGRAM_TOKEN
 # > CHANNEL_ID
+# > REAL_CHANNEL
 # > LLVM_NAME
 # > GH_USERNAME
 # > GH_EMAIL
@@ -184,8 +185,8 @@ clang_version="$(install/bin/clang --version | head -n1 | cut -d' ' -f4)"
 
 # Push to GitHub
 # Update Git repository
-git config --global user.name $GH_USERNAME
-git config --global user.email $GH_EMAIL
+git config --global user.name "$GH_USERNAME"
+git config --global user.email "$GH_EMAIL"
 
 if [[ "${TYPE}" == "release-14" ]]; then
 	git clone -b "${TYPE}" "https://$GH_USERNAME:$GH_TOKEN@$GH_PUSH_REPO_URL" rel_repo
@@ -210,6 +211,12 @@ popd || exit
 # End Count and Calculate Total Build Time
 BUILD_END="$(date +"%s")"
 DIFF="$(( BUILD_END - BUILD_START ))"
+
+# Send finished message to real channel
+if [[ "${REAL_CHANNEL}" ]]; then
+	sendInfo "<b>$LLVM_NAME : </b><code>Toolchain Compilation Finished ... Send message to $REAL_CHANNEL</code>"
+	export CHANNEL_ID="${REAL_CHANNEL}"
+fi
 
 sendInfo "<b>Toolchain Compilation Finished</b>" \
          "<b>Build Took : </b><code>$(("$DIFF" / 60)) Minute, $(("$DIFF" % 60)) Second</code>" \

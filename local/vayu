@@ -22,7 +22,6 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Setup Clang
-export PATH="$HOME/clang/bin:$PATH"
 CLANG_DIR="$HOME/clang"
 PrefixDir="$CLANG_DIR/bin/"
 KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
@@ -109,7 +108,27 @@ while true; do
                  "<b>==================================</b>"
 
         # Run Build
-        make -j"$CORES" O=out CC=clang AR=llvm-ar NM=llvm-nm LD=ld.lld OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
+        if [ -d "${CLANG_DIR}/lib64" ]; then
+            make    -j"$CORES"  O=out \
+                ARCH=$ARCH \
+                SUBARCH=$ARCH \
+                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CLANG_TRIPLE=aarch64-linux-gnu-
+        else
+            make    -j"$CORES"  O=out \
+                ARCH=$ARCH \
+                SUBARCH=$ARCH \
+                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CLANG_TRIPLE=aarch64-linux-gnu-
+        fi
 
         if ! [ -a "$KERNEL_IMG" ]; then
             echo -e "$RED" "\n (!) Compile Kernel for $CODENAME failed, See buildlog to fix errors" "$ENDCOLOR"
@@ -154,7 +173,39 @@ while true; do
                  "<b>==================================</b>"
 
         # Run Build
-        make -j"$CORES" O=out CC=clang LD=${PrefixDir}ld.lld AR=${PrefixDir}llvm-ar NM=${PrefixDir}llvm-nm AS=${PrefixDir}llvm-as STRIP=${PrefixDir}llvm-strip OBJCOPY=${PrefixDir}llvm-objcopy OBJDUMP=${PrefixDir}llvm-objdump READELF=${PrefixDir}llvm-readelf HOSTAR=${PrefixDir}llvm-ar HOSTAS=${PrefixDir}llvm-as HOSTLD=${PrefixDir}ld.lld CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
+        if [ -d "${CLANG_DIR}/lib64" ]; then
+            make    -j"$CORES"  O=out \
+                ARCH=$ARCH \
+                SUBARCH=$ARCH \
+                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                AR=${PrefixDir}llvm-ar \
+                NM=${PrefixDir}llvm-nm \
+                STRIP=${PrefixDir}llvm-strip \
+                OBJDUMP=${PrefixDir}llvm-objdump \
+                READELF=${PrefixDir}llvm-readelf \
+                HOSTAR=${PrefixDir}llvm-ar
+        else
+            make    -j"$CORES"  O=out \
+                ARCH=$ARCH \
+                SUBARCH=$ARCH \
+                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
+                CC=clang \
+                CROSS_COMPILE=aarch64-linux-gnu- \
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CLANG_TRIPLE=aarch64-linux-gnu- \
+                AR=${PrefixDir}llvm-ar \
+                NM=${PrefixDir}llvm-nm \
+                STRIP=${PrefixDir}llvm-strip \
+                OBJDUMP=${PrefixDir}llvm-objdump \
+                READELF=${PrefixDir}llvm-readelf \
+                HOSTAR=${PrefixDir}llvm-ar
+        fi
 
         if ! [ -a "$KERNEL_IMG" ]; then
             echo -e "$RED" "\n (!) Compile Kernel for $CODENAME failed, See buildlog to fix errors" "$ENDCOLOR"

@@ -96,12 +96,6 @@ while true; do
         make O=out $DEFCONFIG
         echo -e "$GREEN" "\n (i) Success export $DEFCONFIG to Out Dir" "$ENDCOLOR"
         echo -e ""
-        
-        if [[ "$ARM64" == "aarch64-linux-android-" ]]; then
-            MorePlusPlus="HOSTCC=clang HOSTCXX=clang++"
-        else
-            MorePlusPlus="HOSTCC=gcc HOSTCXX=g++"
-        fi
     fi
 
     # Build With Clang
@@ -131,10 +125,9 @@ while true; do
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
                 CC=clang \
                 LD=ld.lld \
-                HOSTLD=ld.lld \
                 CROSS_COMPILE=${ARM64} \
                 CROSS_COMPILE_ARM32=${ARM32} \
-                CLANG_TRIPLE=aarch64-linux-gnu- "$MorePlusPlus"
+                CLANG_TRIPLE=aarch64-linux-gnu-
         else
             make    -j"$CORES"  O=out \
                 ARCH=$ARCH \
@@ -142,10 +135,9 @@ while true; do
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
                 CC=clang \
                 LD=ld.lld \
-                HOSTLD=ld.lld \
                 CROSS_COMPILE=${ARM64} \
                 CROSS_COMPILE_ARM32=${ARM32} \
-                CLANG_TRIPLE=aarch64-linux-gnu- "$MorePlusPlus"
+                CLANG_TRIPLE=aarch64-linux-gnu-
         fi
 
         if ! [ -a "$KERNEL_IMG" ]; then
@@ -208,7 +200,7 @@ while true; do
                 OBJDUMP=${PrefixDir}llvm-objdump \
                 READELF=${PrefixDir}llvm-readelf \
                 HOSTAR=${PrefixDir}llvm-ar \
-                HOSTLD=${PrefixDir}ld.lld "$MorePlusPlus" LLVM=1
+                LLVM=1
         else
             make    -j"$CORES"  O=out \
                 ARCH=$ARCH \
@@ -226,7 +218,7 @@ while true; do
                 OBJDUMP=${PrefixDir}llvm-objdump \
                 READELF=${PrefixDir}llvm-readelf \
                 HOSTAR=${PrefixDir}llvm-ar \
-                HOSTLD=${PrefixDir}ld.lld "$MorePlusPlus" LLVM=1
+                LLVM=1
         fi
 
         if ! [ -a "$KERNEL_IMG" ]; then

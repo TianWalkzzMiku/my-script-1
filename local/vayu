@@ -23,18 +23,28 @@ COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Setup Clang
 CLANG_DIR="$HOME/clang"
+GCC64_DIR="$HOME/arm64"
+GCC32_DIR="$HOME/arm32"
 PrefixDir="$CLANG_DIR/bin/"
-KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
+if [[ -d "$HOME/arm64" ]]; then
+    ARM64=aarch64-linux-android-
+    ARM32=arm-linux-androideabi-
+else
+    ARM64=aarch64-linux-gnu-
+    ARM32=arm-linux-gnueabi-
+fi
+    
 # Export
 export TZ="Asia/Jakarta"
 export ZIP_DATE="$(TZ=Asia/Jakarta date +'%d%m%Y')"
 export ZIP_DATE2="$(TZ=Asia/Jakarta date +"%H%M")"
 export ARCH=arm64
 export SUBARCH=arm64
+export PATH="${CLANG_DIR}/bin:${GCC32_DIR}/bin:${GCC64_DIR}/bin:/usr/bin:${PATH}"
 export KBUILD_BUILD_USER="XSansツ"
 export KBUILD_BUILD_HOST="Wibu-Server"
-export KBUILD_COMPILER_STRING
+export KBUILD_COMPILER_STRING="$(${CLANG_DIR}/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
 # Telegram Setup
 git clone --depth=1 https://github.com/XSans02/Telegram Telegram
@@ -86,6 +96,12 @@ while true; do
         make O=out $DEFCONFIG
         echo -e "$GREEN" "\n (i) Success export $DEFCONFIG to Out Dir" "$ENDCOLOR"
         echo -e ""
+        
+        if [[ "$ARM64" == "aarch64-linux-android-" ]]; then
+            MorePlusPlus="HOSTCC=gcc HOSTCXX=g++"
+        else
+            MorePlusPlus="HOSTCC=clang HOSTCXX=clang++"
+        fi
     fi
 
     # Build With Clang
@@ -112,22 +128,24 @@ while true; do
             make    -j"$CORES"  O=out \
                 ARCH=$ARCH \
                 SUBARCH=$ARCH \
-                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
                 CC=clang \
-                CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
-                CLANG_TRIPLE=aarch64-linux-gnu-
+                LD=ld.lld \
+                HOSTLD=ld.lld \
+                CROSS_COMPILE=${ARM64} \
+                CROSS_COMPILE_ARM32=${ARM32} \
+                CLANG_TRIPLE=aarch64-linux-gnu- "$MorePlusPlus"
         else
             make    -j"$CORES"  O=out \
                 ARCH=$ARCH \
                 SUBARCH=$ARCH \
-                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
                 CC=clang \
-                CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
-                CLANG_TRIPLE=aarch64-linux-gnu-
+                LD=ld.lld \
+                HOSTLD=ld.lld \
+                CROSS_COMPILE=${ARM64} \
+                CROSS_COMPILE_ARM32=${ARM32} \
+                CLANG_TRIPLE=aarch64-linux-gnu- "$MorePlusPlus"
         fi
 
         if ! [ -a "$KERNEL_IMG" ]; then
@@ -177,34 +195,38 @@ while true; do
             make    -j"$CORES"  O=out \
                 ARCH=$ARCH \
                 SUBARCH=$ARCH \
-                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib64:${LD_LIBRARY_PATH}" \
                 CC=clang \
-                CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CROSS_COMPILE=${ARM64} \
+                CROSS_COMPILE_ARM32=${ARM32} \
                 CLANG_TRIPLE=aarch64-linux-gnu- \
                 AR=${PrefixDir}llvm-ar \
                 NM=${PrefixDir}llvm-nm \
+                LD=${PrefixDir}ld.lld \
                 STRIP=${PrefixDir}llvm-strip \
+                OBJCOPY=${PrefixDir}llvm-objcopy \
                 OBJDUMP=${PrefixDir}llvm-objdump \
                 READELF=${PrefixDir}llvm-readelf \
-                HOSTAR=${PrefixDir}llvm-ar
+                HOSTAR=${PrefixDir}llvm-ar \
+                HOSTLD=${PrefixDir}ld.lld "$MorePlusPlus" LLVM=1
         else
             make    -j"$CORES"  O=out \
                 ARCH=$ARCH \
                 SUBARCH=$ARCH \
-                PATH=${CLANG_DIR}/bin:/usr/bin:${PATH} \
                 LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
                 CC=clang \
-                CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+                CROSS_COMPILE=${ARM64} \
+                CROSS_COMPILE_ARM32=${ARM32} \
                 CLANG_TRIPLE=aarch64-linux-gnu- \
                 AR=${PrefixDir}llvm-ar \
                 NM=${PrefixDir}llvm-nm \
+                LD=${PrefixDir}ld.lld \
                 STRIP=${PrefixDir}llvm-strip \
+                OBJCOPY=${PrefixDir}llvm-objcopy \
                 OBJDUMP=${PrefixDir}llvm-objdump \
                 READELF=${PrefixDir}llvm-readelf \
-                HOSTAR=${PrefixDir}llvm-ar
+                HOSTAR=${PrefixDir}llvm-ar \
+                HOSTLD=${PrefixDir}ld.lld "$MorePlusPlus" LLVM=1
         fi
 
         if ! [ -a "$KERNEL_IMG" ]; then

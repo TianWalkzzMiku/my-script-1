@@ -6,8 +6,8 @@
 apt-get install cpio libtinfo5
 
 # Cloning kernel resource
-git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/XSans02/kernel_xiaomi_vayu -b ${K_BRANCH} kernel
-DEFCONFIG=vayu_defconfig
+git clone --depth=1 https://github.com/TianWalkzzMiku/SR-Kernel -b caf-4.4 kernel
+DEFCONFIG=whyred-caf_defconfig
 cd kernel || exit
 
 # Release Type
@@ -71,7 +71,7 @@ CPU=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')
 # Export
 export ARCH="arm64"
 export SUBARCH="arm64"
-export KBUILD_BUILD_USER="XSansツ"
+export KBUILD_BUILD_USER="Tiannn"
 export KBUILD_BUILD_HOST="Github-Server"
 export PATH="$KERNEL_DIR/clang/bin:$PATH"
 export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"

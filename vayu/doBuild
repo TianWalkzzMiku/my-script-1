@@ -13,7 +13,7 @@ cd kernel || exit
 # Release Type
 if [[ "${RELEASE}" == "beta" ]]; then
   TYPE=Nightly
-  export LOCALVERSION=-"SuperRyzen-CAF-beta"
+  export LOCALVERSION=-"$TYPE"
 else
   TYPE=Stable
 fi

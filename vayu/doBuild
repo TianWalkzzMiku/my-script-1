@@ -96,6 +96,12 @@ send_file() {
         -F "disable_web_page_preview=true"
 }
 
+send_log() {
+    "{TELEGRAM}" -f "$echo out/log.txt}" \
+    -c "${CHANNEL_ID}" -H \
+        "$1"
+}
+
 send_msg "
 <b>Building New Kernel ...</b>
 <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>
@@ -127,7 +133,7 @@ if [[ "${COMPILE}" == "clang" ]]; then
                 OBJDUMP=llvm-objdump \
                 CLANG_TRIPLE=aarch64-linux-gnu- \
                 CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
 elif [[ "${COMPILE}" == "llvm" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \

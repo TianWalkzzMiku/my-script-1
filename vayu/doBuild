@@ -180,12 +180,12 @@ LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
 # Make zip
 UseDtb=y  # set to 'n' if not used
-UseDtbo=y # set to 'n' if not used
-BASE_DTB_NAME="sm8150-v2"
+UseDtbo=n # set to 'n' if not used
+BASE_DTB_NAME="sdm660_e7s"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 
-if [[ "$UseDtbo" == "y" ]]; then
+if [[ "$UseDtbo" == "n" ]]; then
     cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 fi
 

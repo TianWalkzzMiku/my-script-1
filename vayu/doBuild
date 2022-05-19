@@ -12,14 +12,14 @@ cd kernel || exit
 
 # Release Type
 if [[ "${RELEASE}" == "beta" ]]; then
-  TYPE=Nightly
+  TYPE=V21
   export LOCALVERSION=-"$TYPE"
 else
   TYPE=Stable
 fi
 
 # Clone some ingredient for azure
-if [[ "${TC}" == "azure" ]]; then
+if [[ "${TC}" == "aosp" ]]; then
   HOME=$(pwd)
   curl -fsSL "https://repo.archlinuxcn.org/x86_64/glibc-linux4-2.33-4-x86_64.pkg.tar.zst" | bsdtar -C / -xvf - &>/dev/null
   pacman -Syu --needed --noconfirm wget base-devel xmlto inetutils bc bison cpio git zip python2 &>/dev/null
@@ -72,7 +72,7 @@ CPU=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')
 export ARCH="arm64"
 export SUBARCH="arm64"
 export KBUILD_BUILD_USER="Tiannn"
-export KBUILD_BUILD_HOST="Github-Server"
+export KBUILD_BUILD_HOST="Mob-Psycho"
 export PATH="$KERNEL_DIR/clang/bin:$PATH"
 export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
@@ -185,7 +185,7 @@ LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 # Make zip
 UseDtb=y  # set to 'n' if not used
 UseDtbo=n # set to 'n' if not used
-BASE_DTB_NAME="sdm660_e7s"
+BASE_DTB_NAME="sdm660_e7s.dtsi"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 

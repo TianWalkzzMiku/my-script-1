@@ -6,7 +6,7 @@
 apt-get install cpio libtinfo5
 
 # Cloning kernel resource
-git clone --depth=1 https://github.com/TianWalkzzMiku/SR-Kernel -b caf-4.4 kernel
+git clone --depth=1 https://github.com/TianWalkzzMiku/HyperRyzen -b HyperRyzen-New kernel
 DEFCONFIG=whyred-caf_defconfig
 cd kernel || exit
 

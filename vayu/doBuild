@@ -12,14 +12,14 @@ cd kernel || exit
 
 # Release Type
 if [[ "${RELEASE}" == "beta" ]]; then
-  TYPE=V21
+  TYPE=Nightly
   export LOCALVERSION=-"$TYPE"
 else
   TYPE=Stable
 fi
 
 # Clone some ingredient for azure
-if [[ "${TC}" == "aosp" ]]; then
+if [[ "${TC}" == "azure" ]]; then
   HOME=$(pwd)
   curl -fsSL "https://repo.archlinuxcn.org/x86_64/glibc-linux4-2.33-4-x86_64.pkg.tar.zst" | bsdtar -C / -xvf - &>/dev/null
   pacman -Syu --needed --noconfirm wget base-devel xmlto inetutils bc bison cpio git zip python2 &>/dev/null
@@ -49,7 +49,7 @@ elif [[ "${TC}" =~ "gcc12" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
 fi
 
-git clone --depth=1 https://github.com/kentanglu/AnyKernel_sdm660 -b master ak3
+git clone --depth=1 https://github.com/XSans02/AnyKernel3 -b vayu ak3
 
 # Setup environtment
 KERNEL_DIR="$PWD"
@@ -72,7 +72,7 @@ CPU=$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')
 export ARCH="arm64"
 export SUBARCH="arm64"
 export KBUILD_BUILD_USER="Tiannn"
-export KBUILD_BUILD_HOST="Mob-Psycho"
+export KBUILD_BUILD_HOST="Mob"
 export PATH="$KERNEL_DIR/clang/bin:$PATH"
 export KBUILD_COMPILER_STRING="$("$CLANG_DIR"/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
 
@@ -96,12 +96,6 @@ send_file() {
         -F "disable_web_page_preview=true"
 }
 
-send_log() {
-    "{TELEGRAM}" -f "$echo out/log.txt}" \
-    -c "${CHANNEL_ID}" -H \
-        "$1"
-}
-
 send_msg "
 <b>Building New Kernel ...</b>
 <code>$(date +"%A, %d %b %Y, %H:%M:%S")</code>
@@ -123,15 +117,17 @@ if [[ "${COMPILE}" == "clang" ]]; then
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
                 SUBARCH=arm64 \
+                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
                 CC=clang \
                 AR=llvm-ar \
                 NM=llvm-nm \
+                LD=ld.lld \
                 STRIP=llvm-strip \
                 OBJCOPY=llvm-objcopy \
                 OBJDUMP=llvm-objdump \
                 CLANG_TRIPLE=aarch64-linux-gnu- \
                 CROSS_COMPILE=aarch64-linux-gnu- \
-                CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee out/log.txt
+                CROSS_COMPILE_ARM32=arm-linux-gnueabi-
 elif [[ "${COMPILE}" == "llvm" ]]; then
     make O=out ARCH=arm64 "$DEFCONFIG"
     make -j$(nproc --all) O=out \
@@ -184,12 +180,12 @@ LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 
 # Make zip
 UseDtb=y  # set to 'n' if not used
-UseDtbo=n # set to 'n' if not used
+UseDtbo=y # set to 'n' if not used
 BASE_DTB_NAME="sdm660_e7s"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 
-if [[ "$UseDtbo" == "n" ]]; then
+if [[ "$UseDtbo" == "y" ]]; then
     cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 fi
 
@@ -201,10 +197,10 @@ fi
 cd "$AK3_DIR" || exit
 
 if [[ "$TYPE" ]]; then
-    ZIP_NAME2=["$ZIP_DATE"]["$TYPE"]"HyperRyzen-V21"-"$ZIP_DATE2".zip
+    ZIP_NAME2=["$ZIP_DATE"]["$TYPE"]"HyperRyzen"-"$ZIP_DATE2".zip
     zip -r9 "$ZIP_NAME2" ./*
 else
-    ZIP_NAME2=["$ZIP_DATE"]["$TYPE"]"HyperRyzen-V21"-"$ZIP_DATE2".zip
+    ZIP_NAME2=["$ZIP_DATE"]["$TYPE"]"HyperRyzen"-"$ZIP_DATE2".zip
     zip -r9 "$ZIP_NAME2" ./*
 fi
 

@@ -117,11 +117,9 @@ if [[ "${COMPILE}" == "clang" ]]; then
     make -j$(nproc --all) O=out \
                 ARCH=arm64 \
                 SUBARCH=arm64 \
-                LD_LIBRARY_PATH="${CLANG_DIR}/lib:${LD_LIBRARY_PATH}" \
                 CC=clang \
                 AR=llvm-ar \
                 NM=llvm-nm \
-                LD=ld.lld \
                 STRIP=llvm-strip \
                 OBJCOPY=llvm-objcopy \
                 OBJDUMP=llvm-objdump \

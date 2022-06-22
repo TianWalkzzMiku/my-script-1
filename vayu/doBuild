@@ -49,7 +49,7 @@ elif [[ "${TC}" =~ "gcc12" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
 fi
 
-git clone --depth=1 https://github.com/XSans02/AnyKernel3 -b vayu ak3
+git clone --depth=1 https://github.com/kentanglu/AnyKernel_sdm660 -b master ak3
 
 # Setup environtment
 KERNEL_DIR="$PWD"

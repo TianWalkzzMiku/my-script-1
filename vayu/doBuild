@@ -179,7 +179,7 @@ LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 # Make zip
 UseDtb=y  # set to 'n' if not used
 UseDtbo=y # set to 'n' if not used
-BASE_DTB_NAME="sdm660_e7s"
+BASE_DTB_NAME="sdm636-mtp-whyred"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 

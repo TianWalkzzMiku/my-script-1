@@ -183,7 +183,7 @@ BASE_DTB_NAME="sdm636-mtp-whyred"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 
-if [[ "$UseDtbo" == "y" ]]; then
+if [[ "$UseDtbo" == "n" ]]; then
     cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 fi
 

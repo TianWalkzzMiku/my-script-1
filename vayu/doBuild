@@ -49,7 +49,7 @@ elif [[ "${TC}" =~ "gcc12" ]]; then
   git clone --depth=1 https://github.com/mvaisakh/gcc-arm -b gcc-master arm32
 fi
 
-git clone --depth=1 https://github.com/kentanglu/AnyKernel_sdm660 -b master ak3
+git clone --depth=1 https://github.com/TianWalkzzMiku/AnyKernel3 -b master ak3
 
 # Setup environtment
 KERNEL_DIR="$PWD"
@@ -184,7 +184,7 @@ BASE_DTB_NAME="sdm636-mtp-whyred"
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 
 if [[ "$UseDtbo" == "n" ]]; then
-    cp -r "$KERNEL_DTBO" "$AK3_DIR"
+    cp -r "$KERNEL_DTBO" "$AK3_DIR"/
 fi
 
 if [[ "$UseDtb" == "y" ]]; then

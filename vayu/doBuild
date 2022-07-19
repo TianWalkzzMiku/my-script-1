@@ -7,7 +7,7 @@ apt-get install cpio libtinfo5
 
 # Cloning kernel resource
 git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/TianWalkzzMiku/SRyzen-HMP -b ${K_BRANCH} kernel
-DEFCONFIG=tulip_defconfig
+DEFCONFIG=lavender_defconfig
 cd kernel || exit
 
 # Release Type
@@ -179,7 +179,7 @@ LINUX_VERSION=$(cat < out/.config | grep Linux/arm64 | cut -d " " -f3)
 # Make zip
 UseDtb=y  # set to 'n' if not used
 UseDtbo=y # set to 'n' if not used
-BASE_DTB_NAME="sdm636-mtp-whyred"
+BASE_DTB_NAME="sdm660-mtp-lavender"
 
 cp -r "$KERNEL_IMG" "$AK3_DIR"/
 

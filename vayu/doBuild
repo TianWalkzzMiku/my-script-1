@@ -7,7 +7,7 @@ apt-get install cpio libtinfo5
 
 # Cloning kernel resource
 git clone --depth=1 https://"${TOKED}":x-oauth-basic@github.com/TianWalkzzMiku/SRyzen-HMP -b ${K_BRANCH} kernel
-DEFCONFIG=whyred_defconfig
+DEFCONFIG=tulip_defconfig
 cd kernel || exit
 
 # Release Type
